@@ -4,16 +4,18 @@ export default {
 
     // 1. API Lấy danh sách sản phẩm
     if (url.pathname === "/api/products" && request.method === "GET") {
-      const { results } = await env.DB.prepare("SELECT * FROM products").all();
-      return Response.json(results);
+      try {
+        const { results } = await env.DB.prepare("SELECT * FROM products").all();
+        return Response.json(results);
+      } catch (e) {
+        return Response.json({ error: e.message }, { status: 500 });
+      }
     }
 
-    // 2. API Lưu/Cập nhật người dùng khi Đăng nhập Social (Google/Facebook)
+    // 2. API Đăng nhập Social (Google OAuth)
     if (url.pathname === "/api/auth/social" && request.method === "POST") {
       try {
         const { id, name, email, avatar, provider } = await request.json();
-
-        // Lưu hoặc cập nhật thông tin người dùng dựa trên email
         await env.DB.prepare(`
           INSERT INTO users (id, name, email, avatar_url, provider, provider_id, last_login)
           VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
@@ -32,18 +34,12 @@ export default {
       }
     }
 
-    // 3. API Lấy danh sách đơn hàng cho Admin Dashboard
-    if (url.pathname === "/api/admin/orders" && request.method === "GET") {
-      const { results } = await env.DB.prepare(`
-        SELECT orders.*, users.name as customer_name 
-        FROM orders 
-        JOIN users ON orders.user_id = users.id
-        ORDER BY created_at DESC
-      `).all();
-      return Response.json(results);
+    // 3. Điều hướng trang chủ về login.html
+    if (url.pathname === "/") {
+      return env.ASSETS.fetch(new Request(new URL("/login.html", request.url), request));
     }
 
-    // 4. Phục vụ giao diện tĩnh (HTML, CSS, JS) nếu đường dẫn không phải API
+    // 4. Phục vụ các file tĩnh trong thư mục public (CSS, JS, HTML...)
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
     }
