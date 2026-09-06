@@ -12,13 +12,16 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="auth-body">
-	<div id="g_id_onload"
-		 data-client_id="52215632275-esbtjt5b55d6osdpv8e81l6ifrj5n6a7.apps.googleusercontent.com"
-		 data-context="signin"
-		 data-ux_mode="popup"
-		 data-callback="handleCredentialResponse"
-		 data-auto_prompt="false">
-	</div>
+    <!-- Cấu hình Google Sign-In SDK -->
+    <div id="g_id_onload"
+         data-client_id="52215632275-esbtjt5b55d6osdpv8e81l6ifrj5n6a7.apps.googleusercontent.com"
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleCredentialResponse"
+         data-auto_prompt="false"
+         data-use_fedcm_for_prompt="false">
+    </div>
+
     <div class="auth-wrapper">
         <div class="auth-card">
             
@@ -35,7 +38,7 @@
                 </div>
             </div>
 
-            <!-- FORM DĂNG NHẬP (LOGIN) -->
+            <!-- FORM ĐĂNG NHẬP (LOGIN) -->
             <form id="login-form" class="auth-form active-form" onsubmit="handleLogin(event)">
                 <div class="input-group">
                     <input type="text" id="login-input" placeholder="Username or email address" required>
@@ -89,12 +92,61 @@
         </div>
     </div>
 
-    <!-- Hidden Container for Google One Tap / Button -->
-    <div id="g_id_onload"
-         data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse">
-    </div>
-
+    <!-- Tệp JavaScript chứa logic xử lý Tab & Form -->
     <script src="js/auth.js"></script>
+
+    <!-- Logic Xử lý Đăng Nhập Google -->
+    <script>
+        // Kích hoạt cửa sổ đăng nhập Google khi bấm nút biểu tượng Google
+        function triggerGoogleLogin() {
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+                google.accounts.id.prompt();
+            } else {
+                alert("Đang tải SDK Google, vui lòng thử lại sau giây lát.");
+            }
+        }
+
+        // Hàm Callback nhận token khi người dùng chọn tài khoản Google thành công
+        function handleCredentialResponse(response) {
+            const responsePayload = parseJwt(response.credential);
+            console.log("Dữ liệu Google User:", responsePayload);
+
+            // Gửi dữ liệu về backend Worker API để lưu/cập nhật trong D1
+            fetch('/api/auth/social', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: responsePayload.sub,
+                    name: responsePayload.name,
+                    email: responsePayload.email,
+                    avatar: responsePayload.picture,
+                    provider: 'google'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Đăng nhập Google thành công!');
+                    window.location.href = '/';
+                } else {
+                    alert('Không thể lưu thông tin: ' + (data.error || data.message));
+                }
+            })
+            .catch(err => {
+                console.error('Lỗi API:', err);
+                alert('Lỗi kết nối máy chủ!');
+            });
+        }
+
+        // Hàm hỗ trợ giải mã mã thông báo JWT
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+    </script>
 </body>
 </html>
