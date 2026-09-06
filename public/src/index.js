@@ -2,7 +2,7 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // 1. API Lấy danh sách sản phẩm
+    // 1. API Lấy sản phẩm
     if (url.pathname === "/api/products" && request.method === "GET") {
       try {
         const { results } = await env.DB.prepare("SELECT * FROM products").all();
@@ -12,7 +12,7 @@ export default {
       }
     }
 
-    // 2. API Đăng nhập Social (Google OAuth)
+    // 2. API Đăng nhập Google
     if (url.pathname === "/api/auth/social" && request.method === "POST") {
       try {
         const { id, name, email, avatar, provider } = await request.json();
@@ -34,12 +34,12 @@ export default {
       }
     }
 
-    // 3. Điều hướng trang chủ về login.html
+    // 3. Phục vụ trang chủ / login.html
     if (url.pathname === "/") {
       return env.ASSETS.fetch(new Request(new URL("/login.html", request.url), request));
     }
 
-    // 4. Phục vụ các file tĩnh trong thư mục public (CSS, JS, HTML...)
+    // 4. Phục vụ file tĩnh trong public/
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
     }
