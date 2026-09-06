@@ -1,13 +1,10 @@
 name = "cotamweb-v1"
 main = "src/index.js"
-compatibility_date = "2024-09-01"
+compatibility_date = "2024-09-02"
 
-# Cấu hình chứa các tệp tĩnh giao diện (HTML, CSS, JS) theo chuẩn Assets mới
 [assets]
-directory = "."
-binding = "ASSETS"
+directory = "./public"
 
-# Cấu hình kết nối Cơ sở dữ liệu D1
 [[d1_databases]]
 binding = "DB"
 database_name = "cotamweb_db"
