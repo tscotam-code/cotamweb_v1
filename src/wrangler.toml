@@ -1,0 +1,9 @@
+name = "cotamweb-v1"
+main = "src/index.js" # Đường dẫn tới tệp code chính của bạn
+compatibility_date = "2024-09-01"
+
+# Cấu hình kết nối CSDL D1
+[[d1_databases]]
+binding = "DB"                      
+database_name = "cotamweb_db"       
+database_id = "28a650a0-5e39-4dfe-8261-8f36cdd70b53" # Mã data trên cloudflare
