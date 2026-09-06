@@ -10,17 +10,26 @@ export default {
 
     // 2. API Lưu/Cập nhật người dùng khi Đăng nhập Social (Google/Facebook)
     if (url.pathname === "/api/auth/social" && request.method === "POST") {
-      const { id, name, email, avatar, provider } = await request.json();
+      try {
+        const { id, name, email, avatar, provider } = await request.json();
 
-      await env.DB.prepare(`
-        INSERT INTO users (id, name, email, avatar, provider, provider_id)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ON CONFLICT(email) DO UPDATE SET
-          name = excluded.name,
-          avatar = excluded.avatar
-      `).bind(id, name, email, avatar, provider, id).run();
+        // Lưu hoặc cập nhật thông tin người dùng dựa trên email
+        await env.DB.prepare(`
+          INSERT INTO users (id, name, email, avatar_url, provider, provider_id, last_login)
+          VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT(email) DO UPDATE SET
+            name = excluded.name,
+            avatar_url = excluded.avatar_url,
+            provider = excluded.provider,
+            provider_id = excluded.provider_id,
+            updated_at = CURRENT_TIMESTAMP,
+            last_login = CURRENT_TIMESTAMP
+        `).bind(id, name, email, avatar, provider, id).run();
 
-      return Response.json({ success: true, message: "Đăng nhập thành công" });
+        return Response.json({ success: true, message: "Đăng nhập thành công" });
+      } catch (error) {
+        return Response.json({ success: false, error: error.message }, { status: 500 });
+      }
     }
 
     // 3. API Lấy danh sách đơn hàng cho Admin Dashboard
@@ -32,6 +41,11 @@ export default {
         ORDER BY created_at DESC
       `).all();
       return Response.json(results);
+    }
+
+    // 4. Phục vụ giao diện tĩnh (HTML, CSS, JS) nếu đường dẫn không phải API
+    if (env.ASSETS) {
+      return env.ASSETS.fetch(request);
     }
 
     return new Response("CotamWeb API Running", { status: 200 });
