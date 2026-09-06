@@ -5,6 +5,20 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 var src_default = {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    if (url.pathname === "/zalo_verifierMjM_Cg75Qlugjhy2wuKo6pocY4FGq58LDJaq.html") {
+      const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta property="zalo-platform-site-verification" content="MjM_Cg75Qlugjhy2wuKo6pocY4FGq58LDJaq" />
+</head>
+<body>
+    There Is No Limit To What You Can Accomplish Using Zalo!
+</body>
+</html>`;
+      return new Response(htmlContent, {
+        headers: { "Content-Type": "text/html; charset=utf-8" }
+      });
+    }
     if (url.pathname === "/api/products" && request.method === "GET") {
       try {
         const { results } = await env.DB.prepare("SELECT * FROM products").all();

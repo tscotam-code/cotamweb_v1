@@ -2,6 +2,23 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // 0. Xử lý Route xác thực Zalo Domain
+    if (url.pathname === "/zalo_verifierMjM_Cg75Qlugjhy2wuKo6pocY4FGq58LDJaq.html") {
+      const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta property="zalo-platform-site-verification" content="MjM_Cg75Qlugjhy2wuKo6pocY4FGq58LDJaq" />
+</head>
+<body>
+    There Is No Limit To What You Can Accomplish Using Zalo!
+</body>
+</html>`;
+
+      return new Response(htmlContent, {
+        headers: { "Content-Type": "text/html; charset=utf-8" }
+      });
+    }
+
     // 1. API Lấy danh sách sản phẩm
     if (url.pathname === "/api/products" && request.method === "GET") {
       try {
