@@ -30,3 +30,16 @@ CREATE TABLE IF NOT EXISTS orders (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    username TEXT UNIQUE,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT,             -- Trống nếu đăng nhập qua Social
+    avatar_url TEXT,
+    provider TEXT NOT NULL,         -- 'local', 'google', 'github', 'facebook', 'twitter'
+    provider_id TEXT,
+    role TEXT DEFAULT 'customer',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_login DATETIME
+);

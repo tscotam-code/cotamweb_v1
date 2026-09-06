@@ -1,0 +1,192 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.auth-body {
+    background-color: #1abc9c; /* Màu nền xanh mint như ảnh mẫu */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* KHUNG CHÍNH (Card UI) */
+.auth-wrapper {
+    width: 100%;
+    max-width: 420px; /* Khung chuẩn trên Mobile & Tablet */
+}
+
+/* Tự động căn chỉnh giữa và đổ bóng mềm mại trên Laptop/Desktop */
+.auth-card {
+    background: #ffffff;
+    border-radius: 32px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+/* HEADER TABS */
+.auth-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #bdc3c7;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.auth-header h1.active {
+    color: #000000;
+}
+
+/* AVATAR CIRCLE */
+.avatar-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.avatar-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 3px solid #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #bdc3c7;
+    font-size: 36px;
+    background: #fafafa;
+}
+
+/* INPUT GROUPS */
+.auth-form {
+    display: none;
+}
+
+.auth-form.active-form {
+    display: block;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-bottom: 1.5px solid #e2e8f0;
+    font-size: 15px;
+    outline: none;
+    color: #333;
+    background: transparent;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    border-bottom-color: #5d50e6;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0aec0;
+    cursor: pointer;
+}
+
+/* NÚT SUBMIT */
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 30px;
+    background: #ffffff;
+    color: #5d50e6;
+    font-weight: 700;
+    font-size: 15px;
+    box-shadow: 0 10px 25px rgba(93, 80, 230, 0.15);
+    border: 1px solid #f0f0f0;
+    cursor: pointer;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(93, 80, 230, 0.25);
+}
+
+/* SOCIAL ICONS */
+.social-section {
+    text-align: center;
+    margin-top: 35px;
+}
+
+.social-section p {
+    font-size: 13px;
+    color: #a0aec0;
+    margin-bottom: 15px;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-social {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.btn-social.google { background: #dd4b39; }
+.btn-social.github { background: #333333; }
+.btn-social.twitter { background: #55acee; }
+.btn-social.facebook { background: #3b5998; }
+
+.terms-link {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.terms-link a {
+    color: #a0aec0;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+/* RESPONSIVE MEDIA QUERIES FOR LAPTOP/DESKTOP */
+@media (min-width: 768px) {
+    .auth-wrapper {
+        max-width: 450px;
+    }
+    .auth-card {
+        padding: 50px 40px;
+    }
+}

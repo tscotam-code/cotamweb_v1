@@ -1,12 +1,17 @@
 Folder PATH listing for volume Setup
-Volume serial number is 0000002F 0042:3844
+Volume serial number is 000000FB 0042:3844
 D:\CODE\COTAMWEB_V1
 |   danh_sach.txt
 |   index.html
 |   main
 |   README.md
+|   schema.sql
 |   wrangler.toml
 |   
++---.wrangler
+|   \---cache
+|           wrangler-account.json
+|           
 +---css
 |       main.js
 |       style.css
