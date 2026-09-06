@@ -29,7 +29,7 @@ export default {
       }
     }
 
-    // 2. API Đăng nhập Google (Social Login)
+    // 2. API Đăng nhập Social (Google, Facebook, Zalo)
     if (url.pathname === "/api/auth/social" && request.method === "POST") {
       try {
         const { id, name, email, avatar, provider } = await request.json();
@@ -51,12 +51,49 @@ export default {
       }
     }
 
-    // 3. Phục vụ trang chủ -> Chuyển sang login.html
+    // 3. API Xử lý Zalo OAuth Callback (Đổi code lấy Token & chuyển về Client)
+    if (url.pathname === "/api/auth/zalo/callback" && request.method === "GET") {
+      const code = url.searchParams.get("code");
+      if (!code) {
+        return new Response("Thiếu Authorization Code từ Zalo", { status: 400 });
+      }
+
+      try {
+        const ZALO_APP_ID = "314166203379498791";
+        const ZALO_SECRET_KEY = "sSLENnChKMTM6Bn9P7IY";
+
+        // Đổi code lấy access_token từ Zalo
+        const tokenRes = await fetch("https://oauth.zaloapp.com/v4/access_token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "secret_key": ZALO_SECRET_KEY
+          },
+          body: new URLSearchParams({
+            code: code,
+            app_id: ZALO_APP_ID,
+            grant_type: "authorization_code"
+          })
+        });
+
+        const tokenData = await tokenRes.json();
+        if (!tokenData.access_token) {
+          return new Response("Lỗi cấp Token từ Zalo: " + JSON.stringify(tokenData), { status: 400 });
+        }
+
+        // Chuyển hướng người dùng về trang login.html kèm theo access_token
+        return Response.redirect(`${url.origin}/login.html?zalo_token=${tokenData.access_token}`, 302);
+      } catch (err) {
+        return new Response("Lỗi hệ thống: " + err.message, { status: 500 });
+      }
+    }
+
+    // 4. Phục vụ trang chủ -> Chuyển sang login.html
     if (url.pathname === "/") {
       return env.ASSETS.fetch(new Request(new URL("/login.html", request.url), request));
     }
 
-    // 4. Phục vụ toàn bộ các file tĩnh trong thư mục public/ (CSS, JS, Images)
+    // 5. Phục vụ toàn bộ các file tĩnh trong thư mục public/
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
     }

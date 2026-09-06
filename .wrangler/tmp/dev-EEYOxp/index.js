@@ -46,6 +46,35 @@ var src_default = {
         return Response.json({ success: false, error: error.message }, { status: 500 });
       }
     }
+    if (url.pathname === "/api/auth/zalo/callback" && request.method === "GET") {
+      const code = url.searchParams.get("code");
+      if (!code) {
+        return new Response("Thi\u1EBFu Authorization Code t\u1EEB Zalo", { status: 400 });
+      }
+      try {
+        const ZALO_APP_ID = "314166203379498791";
+        const ZALO_SECRET_KEY = "sSLENnChKMTM6Bn9P7IY";
+        const tokenRes = await fetch("https://oauth.zaloapp.com/v4/access_token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "secret_key": ZALO_SECRET_KEY
+          },
+          body: new URLSearchParams({
+            code,
+            app_id: ZALO_APP_ID,
+            grant_type: "authorization_code"
+          })
+        });
+        const tokenData = await tokenRes.json();
+        if (!tokenData.access_token) {
+          return new Response("L\u1ED7i c\u1EA5p Token t\u1EEB Zalo: " + JSON.stringify(tokenData), { status: 400 });
+        }
+        return Response.redirect(`${url.origin}/login.html?zalo_token=${tokenData.access_token}`, 302);
+      } catch (err) {
+        return new Response("L\u1ED7i h\u1EC7 th\u1ED1ng: " + err.message, { status: 500 });
+      }
+    }
     if (url.pathname === "/") {
       return env.ASSETS.fetch(new Request(new URL("/login.html", request.url), request));
     }
