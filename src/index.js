@@ -29,7 +29,7 @@ export default {
       }
     }
 
-    // 2. API Đăng nhập Social (Google, Facebook, Zalo)
+    // 2. API Đăng nhập Social chung (Google, Facebook, Zalo)
     if (url.pathname === "/api/auth/social" && request.method === "POST") {
       try {
         const { id, name, email, avatar, provider } = await request.json();

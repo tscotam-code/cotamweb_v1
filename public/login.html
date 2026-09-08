@@ -70,7 +70,7 @@
                     <div class="social-icons">
                         <button type="button" class="btn-social zalo" onclick="triggerZaloLogin()" title="Đăng nhập Zalo" style="background: #0068ff; color: #fff; font-weight: bold; border-radius: 50%; width: 40px; height: 40px; border: none; cursor: pointer;">Z</button>
                         <button type="button" class="btn-social twitter"><i class="fa-brands fa-twitter"></i></button>
-                        <button type="button" class="btn-social facebook"><i class="fa-brands fa-facebook-f"></i></button>
+                        <button type="button" class="btn-social facebook" onclick="triggerFacebookLogin()" title="Đăng nhập Facebook"><i class="fa-brands fa-facebook-f"></i></button>
                     </div>
                 </div>
             </form>
@@ -107,8 +107,72 @@
     <!-- Tệp JavaScript chứa logic xử lý Tab & Form -->
     <script src="js/auth.js"></script>
 
+    <!-- Facebook SDK -->
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js"></script>
+
     <!-- Logic Xử lý Đăng Nhập Social -->
     <script>
+        // Khởi tạo Facebook SDK khi trang tải xong
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : 'YOUR_FACEBOOK_APP_ID', // Thay Facebook App ID của bạn vào đây
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v18.0'
+            });
+        };
+
+        // Kích hoạt Đăng nhập Facebook
+        function triggerFacebookLogin() {
+            if (typeof FB === 'undefined') {
+                alert("Facebook SDK chưa sẵn sàng, vui lòng thử lại sau giây lát.");
+                return;
+            }
+
+            FB.login(function(response) {
+                if (response.authResponse) {
+                    // Lấy thông tin tài khoản người dùng qua Facebook Graph API
+                    FB.api('/me', { fields: 'id,name,email,picture' }, function(userInfo) {
+                        if (!userInfo || userInfo.error) {
+                            alert("Lỗi lấy thông tin Facebook: " + (userInfo.error?.message || "Không xác định"));
+                            return;
+                        }
+
+                        const userId = String(userInfo.id || "");
+                        const userName = String(userInfo.name || "Facebook User");
+                        const userAvatar = String(userInfo.picture?.data?.url || "");
+                        const userEmail = userInfo.email ? String(userInfo.email) : `${userId}@facebook.com`;
+
+                        // Gửi dữ liệu về D1 Database qua API chung
+                        fetch('/api/auth/social', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                id: userId,
+                                name: userName,
+                                email: userEmail,
+                                avatar: userAvatar,
+                                provider: 'facebook'
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Đăng nhập Facebook thành công!');
+                                window.location.href = '/';
+                            } else {
+                                alert('Lỗi lưu thông tin: ' + (data.error || data.message));
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Lỗi kết nối API Facebook:', err);
+                            alert('Lỗi kết nối máy chủ!');
+                        });
+                    });
+                }
+            }, { scope: 'public_profile,email' });
+        }
+
         // Tự động kiểm tra và xử lý khi Zalo redirect về kèm zalo_token
         window.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
