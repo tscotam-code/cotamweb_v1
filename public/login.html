@@ -115,7 +115,7 @@
         // Khởi tạo Facebook SDK khi trang tải xong
         window.fbAsyncInit = function() {
             FB.init({
-                appId      : 'YOUR_FACEBOOK_APP_ID', // Thay Facebook App ID của bạn vào đây
+                appId      : '2285870372266516', // Facebook App ID đã được thêm
                 cookie     : true,
                 xfbml      : true,
                 version    : 'v18.0'
@@ -170,7 +170,7 @@
                         });
                     });
                 }
-            }, { scope: 'public_profile,email' });
+            }, { scope: 'public_profile' });
         }
 
         // Tự động kiểm tra và xử lý khi Zalo redirect về kèm zalo_token
